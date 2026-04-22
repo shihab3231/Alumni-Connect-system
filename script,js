@@ -1,0 +1,169 @@
+let alumni = JSON.parse(localStorage.getItem("alumni")) || [];
+
+let form = document.getElementById("alumniForm");
+let table = document.getElementById("alumniTable");
+
+displayAlumni();
+
+form.addEventListener("submit", function(e){
+
+e.preventDefault();
+
+let id = document.getElementById("alumniId").value;
+let name = document.getElementById("name").value;
+let year = document.getElementById("year").value;
+let department = document.getElementById("department").value;
+let company = document.getElementById("company").value;
+let job = document.getElementById("job").value;
+let email = document.getElementById("email").value;
+
+let alumniData = {
+id: Date.now(),
+name,
+year,
+department,
+company,
+job,
+email
+};
+
+if(id){
+alumni = alumni.map(a=>{
+if(a.id == id){
+return {...alumniData, id:id};
+}
+return a;
+});
+}else{
+alumni.push(alumniData);
+}
+
+localStorage.setItem("alumni", JSON.stringify(alumni));
+
+form.reset();
+displayAlumni();
+
+});
+
+function displayAlumni(){
+
+table.innerHTML="";
+
+alumni.forEach((a,index)=>{
+
+let row = `
+<tr>
+<td>${index+1}</td>
+<td>${a.name}</td>
+<td>${a.company}</td>
+<td>${a.job}</td>
+<td>${a.year}</td>
+
+<td>
+<button class="edit" onclick="editAlumni(${a.id})">Edit</button>
+<button class="delete" onclick="deleteAlumni(${a.id})">Delete</button>
+</td>
+
+</tr>
+`;
+
+table.innerHTML += row;
+
+});
+
+}
+
+function deleteAlumni(id){
+
+alumni = alumni.filter(a=>a.id != id);
+
+localStorage.setItem("alumni", JSON.stringify(alumni));
+
+displayAlumni();
+
+}
+
+function editAlumni(id){
+
+let alumniData = alumni.find(a=>a.id==id);
+
+document.getElementById("alumniId").value = alumniData.id;
+document.getElementById("name").value = alumniData.name;
+document.getElementById("year").value = alumniData.year;
+document.getElementById("department").value = alumniData.department;
+document.getElementById("company").value = alumniData.company;
+document.getElementById("job").value = alumniData.job;
+document.getElementById("email").value = alumniData.email;
+
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Load events from localStorage
+    let events = JSON.parse(localStorage.getItem("events")) || [];
+    let eventForm = document.getElementById("eventForm");
+    let eventTable = document.getElementById("eventTable");
+
+    // Display events on page load
+    displayEvents();
+
+    // Add/Edit Event
+    eventForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let id = document.getElementById("eventId").value;
+        let name = document.getElementById("eventName").value;
+        let date = document.getElementById("eventDate").value;
+        let desc = document.getElementById("eventDesc").value;
+
+        let eventData = { id: Date.now(), name, date, desc };
+
+        if(id){
+            // Edit existing event
+            events = events.map(ev => ev.id == id ? {...eventData, id:id} : ev);
+        } else {
+            // Add new event
+            events.push(eventData);
+        }
+
+        localStorage.setItem("events", JSON.stringify(events));
+        eventForm.reset();
+        displayEvents();
+    });
+
+    // Display all events in table
+    function displayEvents() {
+        eventTable.innerHTML = "";
+        events.forEach((ev, index) => {
+            let row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${ev.name}</td>
+                    <td>${ev.date}</td>
+                    <td>${ev.desc}</td>
+                    <td>
+                        <button class="edit" onclick="editEvent(${ev.id})">Edit</button>
+                        <button class="delete" onclick="deleteEvent(${ev.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+            eventTable.innerHTML += row;
+        });
+    }
+
+    // Delete Event function (needed for onclick in HTML)
+    window.deleteEvent = function(id) {
+        events = events.filter(ev => ev.id != id);
+        localStorage.setItem("events", JSON.stringify(events));
+        displayEvents();
+    }
+
+    // Edit Event function (needed for onclick in HTML)
+    window.editEvent = function(id) {
+        let evData = events.find(ev => ev.id == id);
+        document.getElementById("eventId").value = evData.id;
+        document.getElementById("eventName").value = evData.name;
+        document.getElementById("eventDate").value = evData.date;
+        document.getElementById("eventDesc").value = evData.desc;
+    }
+});
